@@ -34,16 +34,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .clock{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
 
-/* ── TOP TABS ─────────────────────────────────────────────────────────────── */
-.top-tabs{display:flex;gap:8px;margin-bottom:18px}
-.top-tab{padding:7px 14px;border:1px solid var(--sep2);border-radius:7px;background:var(--bg2);color:var(--dim);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
-.top-tab:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
-.top-tab.on{background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.35);color:var(--blue)}
-
-/* ── SECTIONS ─────────────────────────────────────────────────────────────── */
-.section{display:none}
-.section.on{display:block}
-
 /* ── STATS ────────────────────────────────────────────────────────────────── */
 .stats{display:flex;gap:36px;padding:0 0 24px;border-bottom:1px solid var(--sep);margin-bottom:24px;flex-wrap:wrap}
 .stat{display:flex;flex-direction:column}
@@ -63,10 +53,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .search input::placeholder{color:var(--dim2)}
 .filter-select{background:var(--bg2);border:1px solid var(--sep2);border-radius:5px;padding:6px 10px;font-size:12px;color:var(--text);outline:none;cursor:pointer}
 .filter-select option{background:var(--bg3)}
-.phase-filter{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.phase-chip{border:1px solid var(--sep2);background:var(--bg2);color:var(--dim);font-size:11px;padding:6px 10px;border-radius:14px;cursor:pointer;transition:all .15s}
-.phase-chip:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
-.phase-chip.on{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.35);color:var(--yellow)}
 
 /* ── VIEW TOGGLE ──────────────────────────────────────────────────────────── */
 .view-toggle{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--sep2);border-radius:5px;padding:2px}
@@ -101,55 +87,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .kb-card-date{font-size:10px;color:var(--dim2);margin-top:4px}
 .kb-card-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
 .kb-card-tag{font-size:9px;background:rgba(255,255,255,.05);color:var(--dim);padding:1px 5px;border-radius:8px}
-
-/* ── ROADMAP ──────────────────────────────────────────────────────────────── */
-.roadmap-meta{display:flex;align-items:center;gap:8px;color:var(--dim2);font-size:11px}
-.roadmap-progress{display:flex;flex-direction:column;gap:10px;background:var(--bg2);border:1px solid var(--sep);border-radius:8px;padding:10px 12px;margin-bottom:12px}
-.roadmap-progress-top{display:flex;align-items:center;gap:8px}
-.roadmap-progress-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim2)}
-.roadmap-progress-val{font-size:12px;font-weight:600}
-.roadmap-progress-track{width:100%;height:6px;border-radius:999px;background:var(--bg3);overflow:hidden}
-.roadmap-progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .2s}
-.roadmap-phase-progress{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
-.roadmap-phase-pill{display:flex;flex-direction:column;gap:4px}
-.roadmap-phase-head{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--dim)}
-.roadmap-phase-bar{height:4px;border-radius:999px;background:var(--bg3);overflow:hidden}
-.roadmap-phase-fill{height:100%;border-radius:999px;background:rgba(74,222,128,.85)}
-.roadmap-card{display:flex;flex-direction:column;gap:8px}
-.roadmap-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.roadmap-prefix{font-size:11px;color:var(--yellow);font-weight:700;letter-spacing:.02em}
-.roadmap-card-title{font-size:12px;font-weight:600;line-height:1.25}
-.roadmap-card-sub{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.roadmap-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;border:1px solid var(--sep2);color:var(--dim)}
-.roadmap-badge.phase{color:var(--yellow);background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.28)}
-.roadmap-badge.area{color:var(--blue);background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.28)}
-.roadmap-badge.eta{color:var(--dim);background:rgba(255,255,255,.04)}
-.roadmap-turn{margin-left:auto;font-size:10px;color:var(--dim2)}
-.roadmap-empty{padding:22px 12px;color:var(--dim);font-size:12px;text-align:center}
-
-/* ── ROADMAP DRAWER ───────────────────────────────────────────────────────── */
-.drawer-backdrop{position:fixed;inset:0;background:var(--overlay);opacity:0;pointer-events:none;transition:opacity .16s;z-index:30}
-.drawer-backdrop.on{opacity:1;pointer-events:auto}
-.roadmap-drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);background:#101010;border-left:1px solid var(--sep2);transform:translateX(100%);transition:transform .18s;z-index:31;display:flex;flex-direction:column}
-.roadmap-drawer.on{transform:translateX(0)}
-.drawer-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid var(--sep)}
-.drawer-title{font-size:15px;font-weight:700;line-height:1.3;padding-right:12px}
-.drawer-close{background:none;border:none;color:var(--dim);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px}
-.drawer-close:hover{color:var(--text)}
-.drawer-body{padding:14px 16px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
-.drawer-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.turn-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.turn-chip.you{background:rgba(74,222,128,.14);color:var(--green)}
-.turn-chip.frank{background:rgba(96,165,250,.14);color:var(--blue)}
-.turn-chip.other{background:rgba(255,255,255,.08);color:var(--dim)}
-.mini-steps{display:flex;flex-direction:column;gap:6px}
-.mini-step{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--text)}
-.mini-step input{margin-top:2px;accent-color:var(--green);width:11px;height:11px}
-.mini-dot{color:var(--dim2);font-size:12px;line-height:1.2}
-.drawer-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim2)}
-.drawer-links{display:flex;flex-wrap:wrap;gap:6px}
-.drawer-link{display:inline-flex;align-items:center;gap:4px;font-size:10px;text-decoration:none;color:var(--blue);border:1px solid rgba(96,165,250,.25);background:rgba(96,165,250,.08);padding:4px 8px;border-radius:4px}
-.drawer-link:hover{background:rgba(96,165,250,.14)}
 
 /* ── LIST VIEW ────────────────────────────────────────────────────────────── */
 .list-table{width:100%;border-collapse:collapse}
@@ -214,12 +151,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   </div>
 </div>
 
-<div class="top-tabs">
-  <button class="top-tab on" id="tab-deep-dives" onclick="setTopTab('deep-dives')">Deep Dives</button>
-  <button class="top-tab" id="tab-build-roadmap" onclick="setTopTab('build-roadmap')">Build Roadmap</button>
-</div>
-
-<section class="section on" id="section-deep-dives">
 <!-- ── STATS ──────────────────────────────────────────────────────────────── -->
 <div class="stats">
   <div class="stat"><div class="stat-val" style="color:var(--green)" id="s-total">—</div><div class="stat-lbl">Total</div></div>
@@ -318,68 +249,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     </div>
   </div>
 </div>
-</section>
-
-<section class="section" id="section-build-roadmap">
-  <div class="actions">
-    <button class="btn primary" onclick="loadRoadmapData()">↻ Refresh</button>
-    <div class="phase-filter" id="roadmap-phase-filter"></div>
-    <div class="actions-r">
-      <select class="filter-select" id="filter-roadmap-area" onchange="applyRoadmapFilters()">
-        <option value="">Todas Áreas</option>
-      </select>
-      <div class="roadmap-meta">
-        <span id="roadmap-total">— tasks</span>
-        <span class="sep">·</span>
-        <span id="roadmap-update-time">—</span>
-      </div>
-    </div>
-  </div>
-  <div class="roadmap-progress">
-    <div class="roadmap-progress-top">
-      <span class="roadmap-progress-lbl">Overall</span>
-      <span class="roadmap-progress-val" id="roadmap-overall-progress">0%</span>
-    </div>
-    <div class="roadmap-progress-track"><div class="roadmap-progress-fill" id="roadmap-overall-fill" style="width:0%"></div></div>
-    <div class="roadmap-phase-progress" id="roadmap-phase-progress"></div>
-  </div>
-  <div class="kanban" id="roadmap-kanban-root"></div>
-</section>
 
 </div><!-- /.page -->
-<div class="drawer-backdrop" id="drawer-backdrop" onclick="closeRoadmapDrawer()"></div>
-<aside class="roadmap-drawer" id="roadmap-drawer" aria-hidden="true">
-  <div class="drawer-head">
-    <div class="drawer-title" id="drawer-title">—</div>
-    <button class="drawer-close" type="button" onclick="closeRoadmapDrawer()" aria-label="Close">×</button>
-  </div>
-  <div class="drawer-body">
-    <div class="drawer-row" id="drawer-badges"></div>
-    <div>
-      <div class="drawer-section-title">Turn</div>
-      <div style="margin-top:6px" id="drawer-turn"></div>
-    </div>
-    <div>
-      <div class="drawer-section-title">Microsteps</div>
-      <div class="mini-steps" id="drawer-steps" style="margin-top:8px"></div>
-    </div>
-    <div id="drawer-links-wrap" style="display:none">
-      <div class="drawer-section-title">Links</div>
-      <div class="drawer-links" id="drawer-links" style="margin-top:8px"></div>
-    </div>
-  </div>
-</aside>
 
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 let DATA = { items: [], total: 0, updated: '' };
 let FILTERED_ITEMS = [];
 let CURRENT_SORT = { column: '', direction: 'asc' };
-let CURRENT_TOP_TAB = 'deep-dives';
-let ROADMAP_DATA = { items: [], updated: '' };
-let FILTERED_ROADMAP_ITEMS = [];
-let ROADMAP_PHASE_FILTERS = new Set();
-let ACTIVE_ROADMAP_ITEM = null;
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function pad(n) { return String(n).padStart(2,'0'); }
@@ -415,24 +292,10 @@ const STATUS_COLORS = {
 
 const STATUS_ORDER = ['Pendente', 'Analisado', 'Na Fila', 'Em Execução', 'Executado', 'Capitalizado', 'Descartado'];
 
-const ROADMAP_STATUS_ORDER = ['Backlog', 'Em andamento', 'Bloqueado', 'Done'];
-const ROADMAP_STATUS_COLORS = {
-  'Backlog': { text: 'var(--dim)', bg: 'var(--bg3)' },
-  'Em andamento': { text: 'var(--blue)', bg: 'rgba(96,165,250,.15)' },
-  'Bloqueado': { text: 'var(--red)', bg: 'rgba(248,113,113,.15)' },
-  'Done': { text: 'var(--green)', bg: 'rgba(74,222,128,.15)' }
-};
-const ROADMAP_STATUS_LABELS = {
-  'Backlog': 'Todo',
-  'Em andamento': 'Doing',
-  'Bloqueado': 'Block',
-  'Done': 'Done'
-};
-
 // ── LOAD DATA ─────────────────────────────────────────────────────────────────
 const EMBEDDED_DATA = {
-  "updated": "2026-02-23T22:04:23.466899",
-  "total": 5,
+  "updated": "2026-02-23T23:08:46.269366",
+  "total": 6,
   "items": [
     {
       "id": "310b72d5-042d-811e-9919-d2bf2801979c",
@@ -502,26 +365,36 @@ const EMBEDDED_DATA = {
       "created": "2026-02-23"
     },
     {
-      "id": "310b72d5-042d-819d-ac19-c4ec81743bb5",
-      "url": "https://www.notion.so/Nem-tudo-luta-s-vezes-Deus-dizendo-descansa-reflex-o-deus-310b72d5042d819dac19c4ec81743bb5",
-      "title": "Nem tudo é luta. Às vezes é Deus dizendo: descansa.. #reflexão #deus ...",
-      "platform": "TikTok",
+      "id": "310b72d5-042d-8198-a500-d04d3849e997",
+      "url": "https://www.notion.so/BREAKING-AI-can-now-design-like-Apple-level-creative-directors-for-free-Here-are-10-Claude-Opus-310b72d5042d8198a500d04d3849e997",
+      "title": "BREAKING: AI can now design like Apple-level creative directors (for free).\n\nHere are 10 Claude Opus",
+      "platform": "X/Twitter",
       "rating": "",
       "status": "Pendente",
       "valor": "",
       "tags": [],
       "date": "2026-02-23",
-      "original_url": "https://www.tiktok.com/@motivacristoofc/video/7601368255021796628",
-      "creator": "motivacristoofc",
-      "creator_id": "310b72d5-042d-81b2-8a62-ed9e3b570f94",
+      "original_url": "https://x.com/Whizz_ai/status/2024489022819803333",
+      "creator": "",
+      "creator_id": "",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "310b72d5-042d-819e-b038-c2ba82c8fabf",
+      "url": "https://www.notion.so/Inbox-item-7zjc-Y0fBmY-310b72d5042d819eb038c2ba82c8fabf",
+      "title": "Inbox item 7zjc-Y0fBmY",
+      "platform": "?",
+      "rating": "",
+      "status": "Na Fila",
+      "valor": "",
+      "tags": [],
+      "date": "2026-02-23",
+      "original_url": "https://www.youtube.com/watch?v=7zjc-Y0fBmY",
+      "creator": "",
+      "creator_id": "",
       "created": "2026-02-23"
     }
   ]
-};
-
-const ROADMAP_EMBEDDED_DATA = {
-  "updated": "2026-02-23T22:00:00Z",
-  "items": []
 };
 
 async function loadData() {
@@ -562,45 +435,6 @@ function updateTimestamp() {
   }
 }
 
-async function loadRoadmapData() {
-  try {
-    try {
-      const resp = await fetch('roadmap_data.json');
-      if (resp.ok) ROADMAP_DATA = await resp.json();
-      else ROADMAP_DATA = ROADMAP_EMBEDDED_DATA;
-    } catch(e) {
-      ROADMAP_DATA = ROADMAP_EMBEDDED_DATA;
-    }
-    initRoadmapFilters();
-    applyRoadmapFilters();
-    updateRoadmapMeta();
-  } catch(e) {
-    console.error('Failed to load roadmap data:', e);
-    document.getElementById('roadmap-total').textContent = 'ERR';
-  }
-}
-
-function updateRoadmapMeta() {
-  document.getElementById('roadmap-total').textContent = `${FILTERED_ROADMAP_ITEMS.length}/${ROADMAP_DATA.items.length} cards`;
-  if (ROADMAP_DATA.updated) {
-    const d = new Date(ROADMAP_DATA.updated);
-    document.getElementById('roadmap-update-time').textContent = 'Updated ' + d.toLocaleString('pt-BR', {
-      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-  }
-}
-
-function setTopTab(tab) {
-  CURRENT_TOP_TAB = tab;
-  document.querySelectorAll('.top-tab').forEach(btn => btn.classList.remove('on'));
-  document.querySelectorAll('.section').forEach(section => section.classList.remove('on'));
-  document.getElementById('tab-' + tab).classList.add('on');
-  document.getElementById('section-' + tab).classList.add('on');
-
-  if (tab === 'build-roadmap') renderRoadmapKanban();
-  else renderCurrentView();
-}
-
 // ── FILTERS ───────────────────────────────────────────────────────────────────
 function applyFilters() {
   const searchQ = document.getElementById('search-input').value.toLowerCase();
@@ -632,225 +466,6 @@ function renderCurrentView() {
   else if (active === 'view-list') renderList();
   else if (active === 'view-stats') renderStats();
 }
-
-function initRoadmapFilters() {
-  const phaseRoot = document.getElementById('roadmap-phase-filter');
-  phaseRoot.innerHTML = '';
-  for (let phase = 0; phase <= 5; phase++) {
-    const btn = document.createElement('button');
-    btn.className = ROADMAP_PHASE_FILTERS.has(phase) ? 'phase-chip on' : 'phase-chip';
-    btn.type = 'button';
-    btn.textContent = `${phase}.x`;
-    btn.onclick = () => toggleRoadmapPhase(phase);
-    phaseRoot.appendChild(btn);
-  }
-
-  const areaSelect = document.getElementById('filter-roadmap-area');
-  const currentArea = areaSelect.value;
-  const areas = [...new Set(ROADMAP_DATA.items.map(i => i.area).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-  areaSelect.innerHTML = '<option value="">Todas Áreas</option>' + areas.map(area => `<option value="${area}">${area}</option>`).join('');
-  areaSelect.value = areas.includes(currentArea) ? currentArea : '';
-}
-
-function toggleRoadmapPhase(phase) {
-  if (ROADMAP_PHASE_FILTERS.has(phase)) ROADMAP_PHASE_FILTERS.delete(phase);
-  else ROADMAP_PHASE_FILTERS.add(phase);
-  initRoadmapFilters();
-  applyRoadmapFilters();
-}
-
-function applyRoadmapFilters() {
-  const selectedArea = document.getElementById('filter-roadmap-area').value;
-  FILTERED_ROADMAP_ITEMS = ROADMAP_DATA.items.filter(item => {
-    const phaseOk = ROADMAP_PHASE_FILTERS.size === 0 || ROADMAP_PHASE_FILTERS.has(item.phase);
-    const areaOk = !selectedArea || item.area === selectedArea;
-    return phaseOk && areaOk;
-  });
-
-  updateRoadmapMeta();
-  renderRoadmapProgress();
-  renderRoadmapKanban();
-}
-
-function renderRoadmapKanban() {
-  const root = document.getElementById('roadmap-kanban-root');
-  if (!root) return;
-  root.innerHTML = '';
-
-  ROADMAP_STATUS_ORDER.forEach(status => {
-    const col = document.createElement('div');
-    col.className = 'kb-col';
-    const color = ROADMAP_STATUS_COLORS[status];
-    const items = FILTERED_ROADMAP_ITEMS
-      .filter(i => i.status === status)
-      .sort((a, b) => a.phase - b.phase || String(a.id).localeCompare(String(b.id)));
-
-    col.innerHTML = `
-      <div class="kb-col-head">
-        <div class="kb-col-title" style="color:${color.text}">${ROADMAP_STATUS_LABELS[status] || status}</div>
-        <span class="kb-col-cnt">${items.length}</span>
-      </div>
-      <div class="kb-cards"></div>
-    `;
-
-    const cardsRoot = col.querySelector('.kb-cards');
-    if (items.length === 0) {
-      cardsRoot.innerHTML = '<div class="roadmap-empty">Sem itens nesse estágio</div>';
-    } else {
-      items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'kb-card roadmap-card';
-        card.onclick = () => openRoadmapDrawer(item.id);
-        const title = getRoadmapShortTitle(item);
-        const owner = getOwnerLabel(item.owner);
-        const phaseBadge = `${Number(item.phase)}.x`;
-
-        card.innerHTML = `
-          <div class="roadmap-card-top">
-            <span class="roadmap-prefix">${getRoadmapPrefix(item)}</span>
-            <span class="roadmap-turn">${owner.short}</span>
-          </div>
-          <div class="roadmap-card-title">${title}</div>
-          <div class="roadmap-card-sub">
-            <span class="roadmap-badge phase">${phaseBadge}</span>
-            <span class="roadmap-badge area">${item.area || 'Core'}</span>
-            <span class="roadmap-badge eta">${item.eta || 'TBD'}</span>
-          </div>
-        `;
-        cardsRoot.appendChild(card);
-      });
-    }
-
-    root.appendChild(col);
-  });
-}
-
-function getRoadmapPrefix(item) {
-  if (!item || typeof item !== 'object') return '0.x';
-  const rawId = String(item.id || '');
-  const match = rawId.match(/p(\d+)-(\d+)/i);
-  if (!match) return `${Number(item.phase || 0)}.x`;
-  return `${Number(match[1])}.${Number(match[2])}`;
-}
-
-function getRoadmapShortTitle(item) {
-  if (!item || !item.title) return 'Untitled';
-  if (item.short_title) return item.short_title;
-  const cleaned = String(item.title).replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
-  if (cleaned.length <= 34) return cleaned;
-  const words = cleaned.split(' ').slice(0, 5);
-  return words.join(' ') + '...';
-}
-
-function getOwnerLabel(owner) {
-  const value = String(owner || '').toLowerCase();
-  if (value === 'you' || value === 'marco') return { label: 'Your turn', short: 'You', cls: 'you' };
-  if (value === 'frank') return { label: 'Frank turn', short: 'Frank', cls: 'frank' };
-  return { label: owner ? `${owner} turn` : 'Unassigned', short: owner || '—', cls: 'other' };
-}
-
-function renderRoadmapProgress() {
-  const total = ROADMAP_DATA.items.length;
-  const done = ROADMAP_DATA.items.filter(i => i.status === 'Done').length;
-  const pct = total ? Math.round((done / total) * 100) : 0;
-
-  document.getElementById('roadmap-overall-progress').textContent = `${pct}%`;
-  document.getElementById('roadmap-overall-fill').style.width = `${pct}%`;
-
-  const phaseRoot = document.getElementById('roadmap-phase-progress');
-  phaseRoot.innerHTML = '';
-  for (let phase = 0; phase <= 5; phase++) {
-    const phaseItems = ROADMAP_DATA.items.filter(i => Number(i.phase) === phase);
-    const phaseDone = phaseItems.filter(i => i.status === 'Done').length;
-    const phasePct = phaseItems.length ? Math.round((phaseDone / phaseItems.length) * 100) : 0;
-    const phaseEl = document.createElement('div');
-    phaseEl.className = 'roadmap-phase-pill';
-    phaseEl.innerHTML = `
-      <div class="roadmap-phase-head">
-        <span>${phase}.x</span>
-        <span>${phasePct}%</span>
-      </div>
-      <div class="roadmap-phase-bar"><div class="roadmap-phase-fill" style="width:${phasePct}%"></div></div>
-    `;
-    phaseRoot.appendChild(phaseEl);
-  }
-}
-
-function openRoadmapDrawer(itemId) {
-  const item = ROADMAP_DATA.items.find(i => i.id === itemId);
-  if (!item) return;
-  ACTIVE_ROADMAP_ITEM = item;
-
-  document.getElementById('drawer-title').textContent = `${getRoadmapPrefix(item)} ${item.title}`;
-  document.getElementById('drawer-badges').innerHTML = `
-    <span class="roadmap-badge phase">${Number(item.phase)}.x</span>
-    <span class="roadmap-badge area">${item.area || 'Core'}</span>
-    <span class="roadmap-badge eta">${item.status || 'Backlog'}</span>
-    <span class="roadmap-badge eta">${item.eta || 'TBD'}</span>
-  `;
-
-  const owner = getOwnerLabel(item.owner);
-  document.getElementById('drawer-turn').innerHTML = `<span class="turn-chip ${owner.cls}">${owner.label}</span>`;
-
-  const stepsRoot = document.getElementById('drawer-steps');
-  const steps = Array.isArray(item.steps) ? item.steps : [];
-  stepsRoot.innerHTML = '';
-  if (steps.length === 0) {
-    stepsRoot.innerHTML = '<div class="mini-step"><span class="mini-dot">•</span><span>No microsteps yet</span></div>';
-  } else {
-    steps.forEach(step => {
-      const row = document.createElement('label');
-      row.className = 'mini-step';
-      row.innerHTML = `<input type="checkbox" disabled><span class="mini-dot">•</span><span>${step}</span>`;
-      stepsRoot.appendChild(row);
-    });
-  }
-
-  const linksWrap = document.getElementById('drawer-links-wrap');
-  const linksRoot = document.getElementById('drawer-links');
-  linksRoot.innerHTML = '';
-  const links = getRoadmapLinks(item);
-  if (links.length > 0) {
-    linksWrap.style.display = 'block';
-    links.forEach(link => {
-      const a = document.createElement('a');
-      a.className = 'drawer-link';
-      a.href = link.url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = link.label;
-      linksRoot.appendChild(a);
-    });
-  } else {
-    linksWrap.style.display = 'none';
-  }
-
-  document.getElementById('drawer-backdrop').classList.add('on');
-  document.getElementById('roadmap-drawer').classList.add('on');
-  document.getElementById('roadmap-drawer').setAttribute('aria-hidden', 'false');
-}
-
-function getRoadmapLinks(item) {
-  const out = [];
-  if (Array.isArray(item.links)) {
-    item.links.forEach(link => {
-      if (link && link.url) out.push({ label: link.label || link.type || 'Link', url: link.url });
-    });
-  }
-  if (item.notion_url) out.push({ label: 'Notion', url: item.notion_url });
-  return out;
-}
-
-function closeRoadmapDrawer() {
-  ACTIVE_ROADMAP_ITEM = null;
-  document.getElementById('drawer-backdrop').classList.remove('on');
-  document.getElementById('roadmap-drawer').classList.remove('on');
-  document.getElementById('roadmap-drawer').setAttribute('aria-hidden', 'true');
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeRoadmapDrawer();
-});
 
 // ── KANBAN ────────────────────────────────────────────────────────────────────
 function renderKanban() {
@@ -1079,10 +694,7 @@ function renderCreatorsChart() {
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-async function init() {
-  await Promise.all([loadData(), loadRoadmapData()]);
-}
-init();
+loadData();
 </script>
 </body>
 </html>
