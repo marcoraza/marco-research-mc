@@ -34,6 +34,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .clock{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
 
+/* ── TOP TABS ─────────────────────────────────────────────────────────────── */
+.top-tabs{display:flex;gap:8px;margin-bottom:18px}
+.top-tab{padding:7px 14px;border:1px solid var(--sep2);border-radius:7px;background:var(--bg2);color:var(--dim);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.top-tab:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.top-tab.on{background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.35);color:var(--blue)}
+
+/* ── SECTIONS ─────────────────────────────────────────────────────────────── */
+.section{display:none}
+.section.on{display:block}
+
 /* ── STATS ────────────────────────────────────────────────────────────────── */
 .stats{display:flex;gap:36px;padding:0 0 24px;border-bottom:1px solid var(--sep);margin-bottom:24px;flex-wrap:wrap}
 .stat{display:flex;flex-direction:column}
@@ -53,6 +63,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .search input::placeholder{color:var(--dim2)}
 .filter-select{background:var(--bg2);border:1px solid var(--sep2);border-radius:5px;padding:6px 10px;font-size:12px;color:var(--text);outline:none;cursor:pointer}
 .filter-select option{background:var(--bg3)}
+.phase-filter{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.phase-chip{border:1px solid var(--sep2);background:var(--bg2);color:var(--dim);font-size:11px;padding:6px 10px;border-radius:14px;cursor:pointer;transition:all .15s}
+.phase-chip:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.phase-chip.on{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.35);color:var(--yellow)}
 
 /* ── VIEW TOGGLE ──────────────────────────────────────────────────────────── */
 .view-toggle{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--sep2);border-radius:5px;padding:2px}
@@ -87,6 +101,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .kb-card-date{font-size:10px;color:var(--dim2);margin-top:4px}
 .kb-card-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
 .kb-card-tag{font-size:9px;background:rgba(255,255,255,.05);color:var(--dim);padding:1px 5px;border-radius:8px}
+
+/* ── ROADMAP ──────────────────────────────────────────────────────────────── */
+.roadmap-meta{display:flex;align-items:center;gap:8px;color:var(--dim2);font-size:11px}
+.roadmap-card-title{font-size:12px;font-weight:600;line-height:1.35;margin-bottom:8px}
+.roadmap-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.roadmap-row{font-size:10px;color:var(--dim);display:flex;align-items:center;justify-content:space-between;gap:6px;padding:3px 0;border-top:1px solid var(--sep)}
+.roadmap-row:first-child{border-top:none}
+.roadmap-label{color:var(--dim2);text-transform:uppercase;letter-spacing:.04em}
+.roadmap-val{color:var(--text)}
+.roadmap-link{display:inline-flex;margin-top:8px;font-size:10px;text-decoration:none;color:var(--blue);border:1px solid rgba(96,165,250,.25);background:rgba(96,165,250,.08);padding:4px 8px;border-radius:4px}
+.roadmap-link:hover{background:rgba(96,165,250,.14)}
+.roadmap-empty{padding:22px 12px;color:var(--dim);font-size:12px;text-align:center}
 
 /* ── LIST VIEW ────────────────────────────────────────────────────────────── */
 .list-table{width:100%;border-collapse:collapse}
@@ -151,6 +177,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   </div>
 </div>
 
+<div class="top-tabs">
+  <button class="top-tab on" id="tab-deep-dives" onclick="setTopTab('deep-dives')">Deep Dives</button>
+  <button class="top-tab" id="tab-build-roadmap" onclick="setTopTab('build-roadmap')">Build Roadmap</button>
+</div>
+
+<section class="section on" id="section-deep-dives">
 <!-- ── STATS ──────────────────────────────────────────────────────────────── -->
 <div class="stats">
   <div class="stat"><div class="stat-val" style="color:var(--green)" id="s-total">—</div><div class="stat-lbl">Total</div></div>
@@ -249,6 +281,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     </div>
   </div>
 </div>
+</section>
+
+<section class="section" id="section-build-roadmap">
+  <div class="actions">
+    <button class="btn primary" onclick="loadRoadmapData()">↻ Refresh</button>
+    <div class="phase-filter" id="roadmap-phase-filter"></div>
+    <div class="actions-r">
+      <select class="filter-select" id="filter-roadmap-area" onchange="applyRoadmapFilters()">
+        <option value="">Todas Áreas</option>
+      </select>
+      <div class="roadmap-meta">
+        <span id="roadmap-total">— tasks</span>
+        <span class="sep">·</span>
+        <span id="roadmap-update-time">—</span>
+      </div>
+    </div>
+  </div>
+  <div class="kanban" id="roadmap-kanban-root"></div>
+</section>
 
 </div><!-- /.page -->
 
@@ -257,6 +308,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 let DATA = { items: [], total: 0, updated: '' };
 let FILTERED_ITEMS = [];
 let CURRENT_SORT = { column: '', direction: 'asc' };
+let CURRENT_TOP_TAB = 'deep-dives';
+let ROADMAP_DATA = { items: [], updated: '' };
+let FILTERED_ROADMAP_ITEMS = [];
+let ROADMAP_PHASE_FILTERS = new Set();
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function pad(n) { return String(n).padStart(2,'0'); }
@@ -291,6 +346,14 @@ const STATUS_COLORS = {
 };
 
 const STATUS_ORDER = ['Pendente', 'Analisado', 'Na Fila', 'Em Execução', 'Executado', 'Capitalizado', 'Descartado'];
+
+const ROADMAP_STATUS_ORDER = ['Backlog', 'Em andamento', 'Bloqueado', 'Done'];
+const ROADMAP_STATUS_COLORS = {
+  'Backlog': { text: 'var(--dim)', bg: 'var(--bg3)' },
+  'Em andamento': { text: 'var(--blue)', bg: 'rgba(96,165,250,.15)' },
+  'Bloqueado': { text: 'var(--red)', bg: 'rgba(248,113,113,.15)' },
+  'Done': { text: 'var(--green)', bg: 'rgba(74,222,128,.15)' }
+};
 
 // ── LOAD DATA ─────────────────────────────────────────────────────────────────
 const EMBEDDED_DATA = {
@@ -382,6 +445,11 @@ const EMBEDDED_DATA = {
   ]
 };
 
+const ROADMAP_EMBEDDED_DATA = {
+  "updated": "2026-02-23T22:00:00Z",
+  "items": []
+};
+
 async function loadData() {
   try {
     try {
@@ -420,6 +488,45 @@ function updateTimestamp() {
   }
 }
 
+async function loadRoadmapData() {
+  try {
+    try {
+      const resp = await fetch('roadmap_data.json');
+      if (resp.ok) ROADMAP_DATA = await resp.json();
+      else ROADMAP_DATA = ROADMAP_EMBEDDED_DATA;
+    } catch(e) {
+      ROADMAP_DATA = ROADMAP_EMBEDDED_DATA;
+    }
+    initRoadmapFilters();
+    applyRoadmapFilters();
+    updateRoadmapMeta();
+  } catch(e) {
+    console.error('Failed to load roadmap data:', e);
+    document.getElementById('roadmap-total').textContent = 'ERR';
+  }
+}
+
+function updateRoadmapMeta() {
+  document.getElementById('roadmap-total').textContent = `${ROADMAP_DATA.items.length} tasks`;
+  if (ROADMAP_DATA.updated) {
+    const d = new Date(ROADMAP_DATA.updated);
+    document.getElementById('roadmap-update-time').textContent = 'Updated ' + d.toLocaleString('pt-BR', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  }
+}
+
+function setTopTab(tab) {
+  CURRENT_TOP_TAB = tab;
+  document.querySelectorAll('.top-tab').forEach(btn => btn.classList.remove('on'));
+  document.querySelectorAll('.section').forEach(section => section.classList.remove('on'));
+  document.getElementById('tab-' + tab).classList.add('on');
+  document.getElementById('section-' + tab).classList.add('on');
+
+  if (tab === 'build-roadmap') renderRoadmapKanban();
+  else renderCurrentView();
+}
+
 // ── FILTERS ───────────────────────────────────────────────────────────────────
 function applyFilters() {
   const searchQ = document.getElementById('search-input').value.toLowerCase();
@@ -450,6 +557,92 @@ function renderCurrentView() {
   if (active === 'view-kanban') renderKanban();
   else if (active === 'view-list') renderList();
   else if (active === 'view-stats') renderStats();
+}
+
+function initRoadmapFilters() {
+  const phaseRoot = document.getElementById('roadmap-phase-filter');
+  phaseRoot.innerHTML = '';
+  for (let phase = 0; phase <= 5; phase++) {
+    const btn = document.createElement('button');
+    btn.className = ROADMAP_PHASE_FILTERS.has(phase) ? 'phase-chip on' : 'phase-chip';
+    btn.type = 'button';
+    btn.textContent = `Phase ${phase}`;
+    btn.onclick = () => toggleRoadmapPhase(phase);
+    phaseRoot.appendChild(btn);
+  }
+
+  const areaSelect = document.getElementById('filter-roadmap-area');
+  const currentArea = areaSelect.value;
+  const areas = [...new Set(ROADMAP_DATA.items.map(i => i.area).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  areaSelect.innerHTML = '<option value="">Todas Áreas</option>' + areas.map(area => `<option value="${area}">${area}</option>`).join('');
+  areaSelect.value = areas.includes(currentArea) ? currentArea : '';
+}
+
+function toggleRoadmapPhase(phase) {
+  if (ROADMAP_PHASE_FILTERS.has(phase)) ROADMAP_PHASE_FILTERS.delete(phase);
+  else ROADMAP_PHASE_FILTERS.add(phase);
+  initRoadmapFilters();
+  applyRoadmapFilters();
+}
+
+function applyRoadmapFilters() {
+  const selectedArea = document.getElementById('filter-roadmap-area').value;
+  FILTERED_ROADMAP_ITEMS = ROADMAP_DATA.items.filter(item => {
+    const phaseOk = ROADMAP_PHASE_FILTERS.size === 0 || ROADMAP_PHASE_FILTERS.has(item.phase);
+    const areaOk = !selectedArea || item.area === selectedArea;
+    return phaseOk && areaOk;
+  });
+
+  renderRoadmapKanban();
+}
+
+function renderRoadmapKanban() {
+  const root = document.getElementById('roadmap-kanban-root');
+  if (!root) return;
+  root.innerHTML = '';
+
+  ROADMAP_STATUS_ORDER.forEach(status => {
+    const col = document.createElement('div');
+    col.className = 'kb-col';
+    const color = ROADMAP_STATUS_COLORS[status];
+    const items = FILTERED_ROADMAP_ITEMS
+      .filter(i => i.status === status)
+      .sort((a, b) => a.phase - b.phase || a.title.localeCompare(b.title));
+
+    col.innerHTML = `
+      <div class="kb-col-head">
+        <div class="kb-col-title" style="color:${color.text}">${status}</div>
+        <span class="kb-col-cnt">${items.length}</span>
+      </div>
+      <div class="kb-cards"></div>
+    `;
+
+    const cardsRoot = col.querySelector('.kb-cards');
+    if (items.length === 0) {
+      cardsRoot.innerHTML = '<div class="roadmap-empty">Sem itens nesse estágio</div>';
+    } else {
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'kb-card';
+        const deps = Array.isArray(item.dependencies) ? item.dependencies.length : Number(item.dependency_count || 0);
+        const notionLink = item.notion_url ? `<a class="roadmap-link" href="${item.notion_url}" target="_blank" rel="noopener noreferrer">Abrir no Notion</a>` : '';
+
+        card.innerHTML = `
+          <div class="roadmap-card-title">${item.title}</div>
+          <div class="roadmap-grid">
+            <div class="roadmap-row"><span class="roadmap-label">Phase</span><span class="roadmap-val">${item.phase}</span></div>
+            <div class="roadmap-row"><span class="roadmap-label">Area</span><span class="roadmap-val">${item.area || '—'}</span></div>
+            <div class="roadmap-row"><span class="roadmap-label">Deps</span><span class="roadmap-val">${deps}</span></div>
+            <div class="roadmap-row"><span class="roadmap-label">ETA</span><span class="roadmap-val">${item.eta || '—'}</span></div>
+          </div>
+          ${notionLink}
+        `;
+        cardsRoot.appendChild(card);
+      });
+    }
+
+    root.appendChild(col);
+  });
 }
 
 // ── KANBAN ────────────────────────────────────────────────────────────────────
@@ -679,7 +872,10 @@ function renderCreatorsChart() {
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-loadData();
+async function init() {
+  await Promise.all([loadData(), loadRoadmapData()]);
+}
+init();
 </script>
 </body>
 </html>

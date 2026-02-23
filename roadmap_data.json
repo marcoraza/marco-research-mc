@@ -1,0 +1,245 @@
+{
+  "updated": "2026-02-23T22:10:00Z",
+  "items": [
+    {
+      "id": "p0-01",
+      "title": "Definir arquitetura base do Discord OS (bot + worker + storage)",
+      "phase": 0,
+      "area": "Infra",
+      "status": "Done",
+      "dependencies": [],
+      "eta": "Concluído",
+      "notion_url": "https://www.notion.so/310b72d5042d81228590ca967b0ee686"
+    },
+    {
+      "id": "p0-02",
+      "title": "Provisionar variáveis de ambiente e gestão de secrets",
+      "phase": 0,
+      "area": "Infra",
+      "status": "Done",
+      "dependencies": [],
+      "eta": "Concluído",
+      "notion_url": ""
+    },
+    {
+      "id": "p0-03",
+      "title": "Configurar schema inicial (tasks, events, feedback)",
+      "phase": 0,
+      "area": "Data",
+      "status": "Em andamento",
+      "dependencies": ["p0-01"],
+      "eta": "2026-03-01",
+      "notion_url": ""
+    },
+    {
+      "id": "p0-04",
+      "title": "Subir observabilidade base (logs, errors, healthcheck)",
+      "phase": 0,
+      "area": "Ops",
+      "status": "Backlog",
+      "dependencies": ["p0-01"],
+      "eta": "2026-03-03",
+      "notion_url": ""
+    },
+    {
+      "id": "p1-01",
+      "title": "Criar pipeline de ingestão do Inbox (mensagens Discord)",
+      "phase": 1,
+      "area": "Discord Bot",
+      "status": "Em andamento",
+      "dependencies": ["p0-01", "p0-02"],
+      "eta": "2026-03-05",
+      "notion_url": ""
+    },
+    {
+      "id": "p1-02",
+      "title": "Normalização + deduplicação de entradas no Inbox",
+      "phase": 1,
+      "area": "Data",
+      "status": "Backlog",
+      "dependencies": ["p1-01", "p0-03"],
+      "eta": "2026-03-08",
+      "notion_url": ""
+    },
+    {
+      "id": "p1-03",
+      "title": "Comando para triagem rápida (aceitar, rejeitar, priorizar)",
+      "phase": 1,
+      "area": "Discord Bot",
+      "status": "Backlog",
+      "dependencies": ["p1-01"],
+      "eta": "2026-03-10",
+      "notion_url": ""
+    },
+    {
+      "id": "p1-04",
+      "title": "SLA de Inbox com alertas de item parado",
+      "phase": 1,
+      "area": "Ops",
+      "status": "Bloqueado",
+      "dependencies": ["p1-01", "p0-04"],
+      "eta": "2026-03-12",
+      "notion_url": ""
+    },
+    {
+      "id": "p2-01",
+      "title": "Worker de pesquisa com fila dedicada por item",
+      "phase": 2,
+      "area": "Research Engine",
+      "status": "Em andamento",
+      "dependencies": ["p0-03", "p1-02"],
+      "eta": "2026-03-15",
+      "notion_url": ""
+    },
+    {
+      "id": "p2-02",
+      "title": "Coletar fontes primárias e metadados por execução",
+      "phase": 2,
+      "area": "Research Engine",
+      "status": "Backlog",
+      "dependencies": ["p2-01"],
+      "eta": "2026-03-18",
+      "notion_url": ""
+    },
+    {
+      "id": "p2-03",
+      "title": "Extrair claims, riscos e evidências em formato estruturado",
+      "phase": 2,
+      "area": "Research Engine",
+      "status": "Backlog",
+      "dependencies": ["p2-01", "p2-02"],
+      "eta": "2026-03-20",
+      "notion_url": ""
+    },
+    {
+      "id": "p2-04",
+      "title": "Validação de qualidade mínima antes de publicar resultado",
+      "phase": 2,
+      "area": "Quality",
+      "status": "Backlog",
+      "dependencies": ["p2-03"],
+      "eta": "2026-03-22",
+      "notion_url": ""
+    },
+    {
+      "id": "p3-01",
+      "title": "Template padrão de Deep Dive (resumo, decisão, próximos passos)",
+      "phase": 3,
+      "area": "Product",
+      "status": "Backlog",
+      "dependencies": ["p2-03"],
+      "eta": "2026-03-25",
+      "notion_url": ""
+    },
+    {
+      "id": "p3-02",
+      "title": "Gerar Ações acionáveis com prioridade e dono",
+      "phase": 3,
+      "area": "Product",
+      "status": "Backlog",
+      "dependencies": ["p3-01"],
+      "eta": "2026-03-27",
+      "notion_url": ""
+    },
+    {
+      "id": "p3-03",
+      "title": "Publicar Deep Dive + Ações no Notion automaticamente",
+      "phase": 3,
+      "area": "Integrations",
+      "status": "Backlog",
+      "dependencies": ["p3-01", "p3-02"],
+      "eta": "2026-03-29",
+      "notion_url": "https://www.notion.so/310b72d5042d81228590ca967b0ee686"
+    },
+    {
+      "id": "p3-04",
+      "title": "Comandos Discord para aprovar ou devolver ações",
+      "phase": 3,
+      "area": "Discord Bot",
+      "status": "Backlog",
+      "dependencies": ["p3-02"],
+      "eta": "2026-03-31",
+      "notion_url": ""
+    },
+    {
+      "id": "p4-01",
+      "title": "Capturar feedback do usuário por item (útil/inútil)",
+      "phase": 4,
+      "area": "Product",
+      "status": "Backlog",
+      "dependencies": ["p3-03"],
+      "eta": "2026-04-03",
+      "notion_url": ""
+    },
+    {
+      "id": "p4-02",
+      "title": "Loop de melhoria de prompt com dataset de feedback",
+      "phase": 4,
+      "area": "Research Engine",
+      "status": "Backlog",
+      "dependencies": ["p4-01", "p2-04"],
+      "eta": "2026-04-06",
+      "notion_url": ""
+    },
+    {
+      "id": "p4-03",
+      "title": "Fila de revisão humana para casos de baixa confiança",
+      "phase": 4,
+      "area": "Quality",
+      "status": "Backlog",
+      "dependencies": ["p2-04", "p4-01"],
+      "eta": "2026-04-08",
+      "notion_url": ""
+    },
+    {
+      "id": "p4-04",
+      "title": "Retry e alertas para falhas de integração críticas",
+      "phase": 4,
+      "area": "Ops",
+      "status": "Bloqueado",
+      "dependencies": ["p0-04", "p3-03"],
+      "eta": "2026-04-10",
+      "notion_url": ""
+    },
+    {
+      "id": "p5-01",
+      "title": "Eventos de tracking ponta a ponta por missão",
+      "phase": 5,
+      "area": "Data",
+      "status": "Backlog",
+      "dependencies": ["p0-03", "p3-03"],
+      "eta": "2026-04-14",
+      "notion_url": ""
+    },
+    {
+      "id": "p5-02",
+      "title": "Dashboard de métricas (throughput, lead time, qualidade)",
+      "phase": 5,
+      "area": "Product",
+      "status": "Backlog",
+      "dependencies": ["p5-01"],
+      "eta": "2026-04-17",
+      "notion_url": ""
+    },
+    {
+      "id": "p5-03",
+      "title": "Digest semanal com progresso das fases e bloqueios",
+      "phase": 5,
+      "area": "Ops",
+      "status": "Backlog",
+      "dependencies": ["p5-01", "p5-02"],
+      "eta": "2026-04-20",
+      "notion_url": ""
+    },
+    {
+      "id": "p5-04",
+      "title": "Medição de impacto das ações executadas no Discord OS",
+      "phase": 5,
+      "area": "Tracking",
+      "status": "Backlog",
+      "dependencies": ["p3-04", "p5-01"],
+      "eta": "2026-04-22",
+      "notion_url": ""
+    }
+  ]
+}
