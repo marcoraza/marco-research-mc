@@ -294,7 +294,7 @@ const STATUS_ORDER = ['Pendente', 'Analisado', 'Na Fila', 'Em Execução', 'Exec
 
 // ── LOAD DATA ─────────────────────────────────────────────────────────────────
 const EMBEDDED_DATA = {
-  "updated": "2026-02-23T21:14:13.186590",
+  "updated": "2026-02-23T21:22:42.227494",
   "total": 2,
   "items": [
     {
@@ -339,7 +339,6 @@ const EMBEDDED_DATA = {
 
 async function loadData() {
   try {
-    // Try fetch first (for live updates), fallback to embedded
     try {
       const resp = await fetch('research_mc_data.json');
       if (resp.ok) DATA = await resp.json();
