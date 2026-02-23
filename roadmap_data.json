@@ -3,243 +3,267 @@
   "items": [
     {
       "id": "p0-01",
-      "title": "Definir arquitetura base do Discord OS (bot + worker + storage)",
+      "title": "Core Architecture",
       "phase": 0,
       "area": "Infra",
       "status": "Done",
-      "dependencies": [],
-      "eta": "Concluído",
-      "notion_url": "https://www.notion.so/310b72d5042d81228590ca967b0ee686"
+      "eta": "Done",
+      "owner": "frank",
+      "steps": ["Split bot and worker runtime", "Define storage contract", "Freeze service boundaries"],
+      "links": [{"label": "Notion", "url": "https://www.notion.so/310b72d5042d81228590ca967b0ee686"}]
     },
     {
       "id": "p0-02",
-      "title": "Provisionar variáveis de ambiente e gestão de secrets",
+      "title": "Secrets Setup",
       "phase": 0,
       "area": "Infra",
       "status": "Done",
-      "dependencies": [],
-      "eta": "Concluído",
-      "notion_url": ""
+      "eta": "Done",
+      "owner": "frank",
+      "steps": ["Map required env vars", "Provision secret store", "Run startup validation"],
+      "links": []
     },
     {
       "id": "p0-03",
-      "title": "Configurar schema inicial (tasks, events, feedback)",
+      "title": "Schema Foundation",
       "phase": 0,
       "area": "Data",
       "status": "Em andamento",
-      "dependencies": ["p0-01"],
       "eta": "2026-03-01",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Create tasks table", "Add events and feedback tables", "Add base indexes"],
+      "links": []
     },
     {
       "id": "p0-04",
-      "title": "Subir observabilidade base (logs, errors, healthcheck)",
+      "title": "Ops Baseline",
       "phase": 0,
       "area": "Ops",
       "status": "Backlog",
-      "dependencies": ["p0-01"],
       "eta": "2026-03-03",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Add structured logs", "Wire error tracking", "Expose health endpoint"],
+      "links": []
     },
     {
       "id": "p1-01",
-      "title": "Criar pipeline de ingestão do Inbox (mensagens Discord)",
+      "title": "Inbox Intake",
       "phase": 1,
       "area": "Discord Bot",
       "status": "Em andamento",
-      "dependencies": ["p0-01", "p0-02"],
       "eta": "2026-03-05",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Capture Discord payload", "Persist raw message", "Ack to user"],
+      "links": []
     },
     {
       "id": "p1-02",
-      "title": "Normalização + deduplicação de entradas no Inbox",
+      "title": "Dedup Layer",
       "phase": 1,
       "area": "Data",
       "status": "Backlog",
-      "dependencies": ["p1-01", "p0-03"],
       "eta": "2026-03-08",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Define dedup key", "Normalize incoming text", "Merge repeated entries"],
+      "links": []
     },
     {
       "id": "p1-03",
-      "title": "Comando para triagem rápida (aceitar, rejeitar, priorizar)",
+      "title": "Triage Command",
       "phase": 1,
       "area": "Discord Bot",
       "status": "Backlog",
-      "dependencies": ["p1-01"],
       "eta": "2026-03-10",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Add accept action", "Add reject action", "Add priority action"],
+      "links": []
     },
     {
       "id": "p1-04",
-      "title": "SLA de Inbox com alertas de item parado",
+      "title": "Inbox SLA Alerts",
       "phase": 1,
       "area": "Ops",
       "status": "Bloqueado",
-      "dependencies": ["p1-01", "p0-04"],
       "eta": "2026-03-12",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Track idle time", "Set SLA thresholds", "Trigger alert route"],
+      "links": []
     },
     {
       "id": "p2-01",
-      "title": "Worker de pesquisa com fila dedicada por item",
+      "title": "Research Worker",
       "phase": 2,
       "area": "Research Engine",
       "status": "Em andamento",
-      "dependencies": ["p0-03", "p1-02"],
       "eta": "2026-03-15",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Bind queue consumer", "Fetch task context", "Emit run trace"],
+      "links": []
     },
     {
       "id": "p2-02",
-      "title": "Coletar fontes primárias e metadados por execução",
+      "title": "Source Collector",
       "phase": 2,
       "area": "Research Engine",
       "status": "Backlog",
-      "dependencies": ["p2-01"],
       "eta": "2026-03-18",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Collect primary sources", "Store citations", "Attach execution metadata"],
+      "links": [{"label": "Docs", "url": "https://docs.notion.so"}]
     },
     {
       "id": "p2-03",
-      "title": "Extrair claims, riscos e evidências em formato estruturado",
+      "title": "Claim Extractor",
       "phase": 2,
       "area": "Research Engine",
       "status": "Backlog",
-      "dependencies": ["p2-01", "p2-02"],
       "eta": "2026-03-20",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Parse claims", "Score risks", "Link evidence"],
+      "links": []
     },
     {
       "id": "p2-04",
-      "title": "Validação de qualidade mínima antes de publicar resultado",
+      "title": "Quality Gate",
       "phase": 2,
       "area": "Quality",
       "status": "Backlog",
-      "dependencies": ["p2-03"],
       "eta": "2026-03-22",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Define pass criteria", "Block low confidence output", "Return actionable errors"],
+      "links": []
     },
     {
       "id": "p3-01",
-      "title": "Template padrão de Deep Dive (resumo, decisão, próximos passos)",
+      "title": "Dive Template",
       "phase": 3,
       "area": "Product",
       "status": "Backlog",
-      "dependencies": ["p2-03"],
       "eta": "2026-03-25",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Create summary block", "Add decision block", "Add next steps block"],
+      "links": []
     },
     {
       "id": "p3-02",
-      "title": "Gerar Ações acionáveis com prioridade e dono",
+      "title": "Action Generator",
       "phase": 3,
       "area": "Product",
       "status": "Backlog",
-      "dependencies": ["p3-01"],
       "eta": "2026-03-27",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Generate action list", "Assign priority", "Assign owner"],
+      "links": []
     },
     {
       "id": "p3-03",
-      "title": "Publicar Deep Dive + Ações no Notion automaticamente",
+      "title": "Notion Publisher",
       "phase": 3,
       "area": "Integrations",
       "status": "Backlog",
-      "dependencies": ["p3-01", "p3-02"],
       "eta": "2026-03-29",
-      "notion_url": "https://www.notion.so/310b72d5042d81228590ca967b0ee686"
+      "owner": "you",
+      "steps": ["Map Notion fields", "Post Deep Dive page", "Post action items"],
+      "links": [{"label": "Notion", "url": "https://www.notion.so/310b72d5042d81228590ca967b0ee686"}]
     },
     {
       "id": "p3-04",
-      "title": "Comandos Discord para aprovar ou devolver ações",
+      "title": "Action Approval Cmd",
       "phase": 3,
       "area": "Discord Bot",
       "status": "Backlog",
-      "dependencies": ["p3-02"],
       "eta": "2026-03-31",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Add approve command", "Add return command", "Sync result state"],
+      "links": []
     },
     {
       "id": "p4-01",
-      "title": "Capturar feedback do usuário por item (útil/inútil)",
+      "title": "Feedback Capture",
       "phase": 4,
       "area": "Product",
       "status": "Backlog",
-      "dependencies": ["p3-03"],
       "eta": "2026-04-03",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Collect useful/not useful", "Attach to item", "Track response rate"],
+      "links": []
     },
     {
       "id": "p4-02",
-      "title": "Loop de melhoria de prompt com dataset de feedback",
+      "title": "Prompt Loop",
       "phase": 4,
       "area": "Research Engine",
       "status": "Backlog",
-      "dependencies": ["p4-01", "p2-04"],
       "eta": "2026-04-06",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Build feedback dataset", "Tune prompts", "Compare quality deltas"],
+      "links": []
     },
     {
       "id": "p4-03",
-      "title": "Fila de revisão humana para casos de baixa confiança",
+      "title": "Human Review Queue",
       "phase": 4,
       "area": "Quality",
       "status": "Backlog",
-      "dependencies": ["p2-04", "p4-01"],
       "eta": "2026-04-08",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Route low confidence runs", "Define reviewer action", "Close loop to model"],
+      "links": []
     },
     {
       "id": "p4-04",
-      "title": "Retry e alertas para falhas de integração críticas",
+      "title": "Critical Retry",
       "phase": 4,
       "area": "Ops",
       "status": "Bloqueado",
-      "dependencies": ["p0-04", "p3-03"],
       "eta": "2026-04-10",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Classify critical failures", "Retry with backoff", "Escalate repeated fails"],
+      "links": []
     },
     {
       "id": "p5-01",
-      "title": "Eventos de tracking ponta a ponta por missão",
+      "title": "Mission Tracking",
       "phase": 5,
       "area": "Data",
       "status": "Backlog",
-      "dependencies": ["p0-03", "p3-03"],
       "eta": "2026-04-14",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Emit full journey events", "Correlate by mission id", "Store analytics snapshots"],
+      "links": []
     },
     {
       "id": "p5-02",
-      "title": "Dashboard de métricas (throughput, lead time, qualidade)",
+      "title": "Metrics Board",
       "phase": 5,
       "area": "Product",
       "status": "Backlog",
-      "dependencies": ["p5-01"],
       "eta": "2026-04-17",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Define throughput KPI", "Define lead-time KPI", "Define quality KPI"],
+      "links": []
     },
     {
       "id": "p5-03",
-      "title": "Digest semanal com progresso das fases e bloqueios",
+      "title": "Weekly Digest",
       "phase": 5,
       "area": "Ops",
       "status": "Backlog",
-      "dependencies": ["p5-01", "p5-02"],
       "eta": "2026-04-20",
-      "notion_url": ""
+      "owner": "you",
+      "steps": ["Summarize phase progress", "Highlight blockers", "Send weekly recap"],
+      "links": []
     },
     {
       "id": "p5-04",
-      "title": "Medição de impacto das ações executadas no Discord OS",
+      "title": "Impact Tracker",
       "phase": 5,
       "area": "Tracking",
       "status": "Backlog",
-      "dependencies": ["p3-04", "p5-01"],
       "eta": "2026-04-22",
-      "notion_url": ""
+      "owner": "frank",
+      "steps": ["Map action to impact", "Track execution outcomes", "Publish impact score"],
+      "links": []
     }
   ]
 }
