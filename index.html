@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔬 Research Mission Control — Marco OS</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ── RESET + VARS ─────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#111;--bg2:#1a1a1a;--bg3:#222;
+  --sep:rgba(255,255,255,.06);--sep2:rgba(255,255,255,.1);
+  --text:#e2e2e2;--dim:#888;--dim2:#555;
+  --green:#4ade80;--blue:#60a5fa;--yellow:#fbbf24;
+  --orange:#fb923c;--purple:#c084fc;--red:#f87171;--gold:#fcd34d;
+  --overlay:rgba(0,0,0,.55)
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;font-size:13px}
+
+/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+.page{max-width:1200px;margin:0 auto;padding:32px 24px 64px}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.header h1{font-size:22px;font-weight:600;letter-spacing:-.4px}
+.header-sub{font-size:12px;color:var(--dim);margin-top:3px;display:flex;align-items:center;gap:12px}
+.header-sub a{color:var(--dim);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s}
+.header-sub a:hover{color:var(--text)}
+.header-sub .sep{color:var(--dim2)}
+.header-right{display:flex;align-items:center;gap:14px;padding-top:4px}
+.status-pill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green)}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.clock{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+
+/* ── STATS ────────────────────────────────────────────────────────────────── */
+.stats{display:flex;gap:36px;padding:0 0 24px;border-bottom:1px solid var(--sep);margin-bottom:24px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column}
+.stat-val{font-size:22px;font-weight:700;line-height:1}
+.stat-lbl{font-size:11px;color:var(--dim);margin-top:3px}
+
+/* ── ACTIONS ──────────────────────────────────────────────────────────────── */
+.actions{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.actions-r{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid var(--sep2);background:var(--bg2);color:var(--dim)}
+.btn:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.btn.primary{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.25);color:var(--green)}
+.btn.primary:hover{background:rgba(74,222,128,.18)}
+.btn.active{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:var(--text)}
+.search{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--sep2);border-radius:5px;padding:5px 10px}
+.search input{background:none;border:none;outline:none;color:var(--text);font-size:12px;width:140px}
+.search input::placeholder{color:var(--dim2)}
+.filter-select{background:var(--bg2);border:1px solid var(--sep2);border-radius:5px;padding:6px 10px;font-size:12px;color:var(--text);outline:none;cursor:pointer}
+.filter-select option{background:var(--bg3)}
+
+/* ── VIEW TOGGLE ──────────────────────────────────────────────────────────── */
+.view-toggle{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--sep2);border-radius:5px;padding:2px}
+.vt-btn{padding:4px 10px;border-radius:3px;cursor:pointer;font-size:11px;color:var(--dim);transition:all .15s;user-select:none;display:flex;align-items:center;gap:5px}
+.vt-btn:hover{color:var(--text)}
+.vt-btn.on{background:var(--bg3);color:var(--text)}
+
+/* ── VIEWS ────────────────────────────────────────────────────────────────── */
+.view{display:none}
+.view.on{display:block}
+
+/* ── KANBAN ───────────────────────────────────────────────────────────────── */
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+@media(max-width:900px){.kanban{overflow-x:auto;display:flex;min-width:100%}}
+.kb-col{background:var(--bg2);border:1px solid var(--sep);border-radius:8px;overflow:hidden;min-width:160px}
+.kb-col-head{padding:10px 14px;border-bottom:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
+.kb-col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:7px}
+.kb-col-cnt{font-size:10px;color:var(--dim2);background:var(--bg3);padding:1px 7px;border-radius:10px}
+.kb-cards{padding:8px;display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 400px);overflow-y:auto}
+.kb-card{background:var(--bg3);border:1px solid var(--sep2);border-radius:6px;padding:9px 11px;transition:border-color .15s;cursor:pointer}
+.kb-card:hover{border-color:rgba(255,255,255,.18)}
+.kb-card-platform{font-size:16px;margin-bottom:4px}
+.kb-card-title{font-size:12px;font-weight:500;line-height:1.3;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.kb-card-creator{font-size:10px;color:var(--dim);margin-bottom:6px;padding:2px 6px;background:rgba(255,255,255,.05);border-radius:3px;display:inline-block}
+.kb-card-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.kb-card-rating{font-size:11px}
+.kb-card-valor{font-size:9px;font-weight:600;padding:2px 6px;border-radius:10px;text-transform:uppercase;letter-spacing:.05em}
+.kb-card-valor.ref{background:rgba(136,136,136,.15);color:var(--dim)}
+.kb-card-valor.apl{background:rgba(96,165,250,.15);color:var(--blue)}
+.kb-card-valor.alt{background:rgba(251,146,60,.15);color:var(--orange)}
+.kb-card-valor.gam{background:rgba(248,113,113,.15);color:var(--red)}
+.kb-card-date{font-size:10px;color:var(--dim2);margin-top:4px}
+.kb-card-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.kb-card-tag{font-size:9px;background:rgba(255,255,255,.05);color:var(--dim);padding:1px 5px;border-radius:8px}
+
+/* ── LIST VIEW ────────────────────────────────────────────────────────────── */
+.list-table{width:100%;border-collapse:collapse}
+.list-table thead{border-bottom:1px solid var(--sep)}
+.list-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--dim2);padding:8px 6px;text-align:left;cursor:pointer;user-select:none}
+.list-table th:hover{color:var(--dim)}
+.list-table th svg{display:inline-block;margin-left:3px;opacity:.3;vertical-align:middle}
+.list-table td{padding:10px 6px;border-bottom:1px solid var(--sep);font-size:12px}
+.list-table tr{cursor:pointer;transition:background .1s}
+.list-table tr:hover{background:rgba(255,255,255,.025)}
+.list-table .platform-emoji{font-size:16px}
+.list-table .creator-badge{font-size:10px;background:rgba(255,255,255,.05);padding:2px 6px;border-radius:3px;color:var(--dim)}
+.list-table .tags-cell{display:flex;gap:3px;flex-wrap:wrap}
+.list-table .tag-pill{font-size:9px;background:rgba(255,255,255,.05);padding:1px 5px;border-radius:8px;color:var(--dim)}
+
+/* ── STATS VIEW ───────────────────────────────────────────────────────────── */
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:28px}
+.chart-box{background:var(--bg2);border-radius:7px;padding:16px;border:1px solid var(--sep)}
+.chart-box h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:12px}
+.chart-canvas{max-height:240px}
+
+/* ── BADGES ───────────────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px}
+.badge.ok{background:rgba(74,222,128,.1);color:var(--green)}
+.badge.err{background:rgba(248,113,113,.1);color:var(--red)}
+.badge.idle{background:rgba(255,255,255,.05);color:var(--dim2)}
+.badge.gray{background:rgba(136,136,136,.15);color:var(--dim)}
+.badge.blue{background:rgba(96,165,250,.15);color:var(--blue)}
+.badge.orange{background:rgba(251,146,60,.15);color:var(--orange)}
+.badge.yellow{background:rgba(251,191,36,.15);color:var(--yellow)}
+.badge.green{background:rgba(74,222,128,.15);color:var(--green)}
+.badge.purple{background:rgba(192,132,252,.15);color:var(--purple)}
+
+/* ── SCROLLBAR ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--dim2)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <div>
+    <h1>🔬 Research Mission Control</h1>
+    <div class="header-sub">
+      Deep Dives Pipeline
+      <span class="sep">·</span>
+      <a href="https://www.notion.so/310b72d5042d81228590ca967b0ee686" target="_blank">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Notion DB
+      </a>
+      <span class="sep">·</span>
+      <span id="update-time" style="color:var(--dim2)">—</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-pill"><div class="sdot"></div>ONLINE</div>
+    <div class="clock" id="clock">--:-- BRT</div>
+  </div>
+</div>
+
+<!-- ── STATS ──────────────────────────────────────────────────────────────── -->
+<div class="stats">
+  <div class="stat"><div class="stat-val" style="color:var(--green)" id="s-total">—</div><div class="stat-lbl">Total</div></div>
+  <div class="stat"><div class="stat-val" id="s-pendente">—</div><div class="stat-lbl">Pendente</div></div>
+  <div class="stat"><div class="stat-val" style="color:var(--blue)" id="s-analisado">—</div><div class="stat-lbl">Analisado</div></div>
+  <div class="stat"><div class="stat-val" style="color:var(--orange)" id="s-fila">—</div><div class="stat-lbl">Na Fila</div></div>
+  <div class="stat"><div class="stat-val" style="color:var(--yellow)" id="s-execucao">—</div><div class="stat-lbl">Em Execução</div></div>
+  <div class="stat"><div class="stat-val" style="color:var(--green)" id="s-executado">—</div><div class="stat-lbl">Executado</div></div>
+  <div class="stat"><div class="stat-val" style="color:var(--purple)" id="s-capitalizado">—</div><div class="stat-lbl">Capitalizado</div></div>
+</div>
+
+<!-- ── ACTIONS ────────────────────────────────────────────────────────────── -->
+<div class="actions">
+  <button class="btn primary" onclick="loadData()">↻ Refresh</button>
+  <select class="filter-select" id="filter-platform" onchange="applyFilters()">
+    <option value="">Todas Plataformas</option>
+    <option value="X/Twitter">🐦 X/Twitter</option>
+    <option value="YouTube">🎬 YouTube</option>
+    <option value="Instagram">📸 Instagram</option>
+    <option value="TikTok">🎵 TikTok</option>
+    <option value="Podcast">🎙️ Podcast</option>
+    <option value="Artigo">📄 Artigo</option>
+  </select>
+  <select class="filter-select" id="filter-rating" onchange="applyFilters()">
+    <option value="">Todas Ratings</option>
+    <option value="⭐">⭐</option>
+    <option value="⭐⭐">⭐⭐</option>
+    <option value="⭐⭐⭐">⭐⭐⭐</option>
+    <option value="⭐⭐⭐⭐">⭐⭐⭐⭐</option>
+    <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐</option>
+  </select>
+  <div class="actions-r">
+    <div class="search">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Buscar..." oninput="applyFilters()">
+    </div>
+    <div class="view-toggle">
+      <div class="vt-btn on" id="vt-kanban" onclick="setView('kanban')" title="Kanban">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="11" rx="1"/><rect x="17" y="3" width="5" height="15" rx="1"/></svg>
+        Kanban
+      </div>
+      <div class="vt-btn" id="vt-list" onclick="setView('list')" title="Lista">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Lista
+      </div>
+      <div class="vt-btn" id="vt-stats" onclick="setView('stats')" title="Stats">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+        Stats
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── KANBAN VIEW ────────────────────────────────────────────────────────── -->
+<div class="view on" id="view-kanban">
+  <div class="kanban" id="kanban-root"></div>
+</div>
+
+<!-- ── LIST VIEW ──────────────────────────────────────────────────────────── -->
+<div class="view" id="view-list">
+  <table class="list-table" id="list-table">
+    <thead>
+      <tr>
+        <th onclick="sortTable('status')">Status <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></th>
+        <th onclick="sortTable('platform')">Platform <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></th>
+        <th onclick="sortTable('title')">Title <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></th>
+        <th onclick="sortTable('creator')">Creator <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></th>
+        <th onclick="sortTable('rating')">Rating <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></th>
+        <th onclick="sortTable('valor')">Valor <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></th>
+        <th onclick="sortTable('date')">Date <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg></th>
+        <th>Tags</th>
+      </tr>
+    </thead>
+    <tbody id="list-body"></tbody>
+  </table>
+</div>
+
+<!-- ── STATS VIEW ─────────────────────────────────────────────────────────── -->
+<div class="view" id="view-stats">
+  <div class="charts-grid">
+    <div class="chart-box">
+      <h4>Items por Status</h4>
+      <canvas id="chart-status" class="chart-canvas"></canvas>
+    </div>
+    <div class="chart-box">
+      <h4>Items por Plataforma</h4>
+      <canvas id="chart-platform" class="chart-canvas"></canvas>
+    </div>
+    <div class="chart-box">
+      <h4>Items por Rating</h4>
+      <canvas id="chart-rating" class="chart-canvas"></canvas>
+    </div>
+    <div class="chart-box">
+      <h4>Top Criadores</h4>
+      <canvas id="chart-creators" class="chart-canvas"></canvas>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.page -->
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+let DATA = { items: [], total: 0, updated: '' };
+let FILTERED_ITEMS = [];
+let CURRENT_SORT = { column: '', direction: 'asc' };
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function pad(n) { return String(n).padStart(2,'0'); }
+function getBRT() { return new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'})); }
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function updateClock() {
+  const d = getBRT();
+  document.getElementById('clock').textContent = pad(d.getHours())+':'+pad(d.getMinutes())+' BRT';
+}
+setInterval(updateClock, 10000); updateClock();
+
+// ── PLATFORM EMOJIS ───────────────────────────────────────────────────────────
+const PLATFORM_EMOJI = {
+  'X/Twitter': '🐦',
+  'YouTube': '🎬',
+  'Instagram': '📸',
+  'TikTok': '🎵',
+  'Podcast': '🎙️',
+  'Artigo': '📄'
+};
+
+// ── STATUS COLORS ─────────────────────────────────────────────────────────────
+const STATUS_COLORS = {
+  'Pendente': { bg: 'var(--bg3)', text: 'var(--dim)' },
+  'Analisado': { bg: 'rgba(96,165,250,.15)', text: 'var(--blue)' },
+  'Na Fila': { bg: 'rgba(251,146,60,.15)', text: 'var(--orange)' },
+  'Em Execução': { bg: 'rgba(251,191,36,.15)', text: 'var(--yellow)' },
+  'Executado': { bg: 'rgba(74,222,128,.15)', text: 'var(--green)' },
+  'Capitalizado': { bg: 'rgba(192,132,252,.15)', text: 'var(--purple)' },
+  'Descartado': { bg: 'rgba(85,85,85,.15)', text: 'var(--dim2)' }
+};
+
+const STATUS_ORDER = ['Pendente', 'Analisado', 'Na Fila', 'Em Execução', 'Executado', 'Capitalizado', 'Descartado'];
+
+// ── LOAD DATA ─────────────────────────────────────────────────────────────────
+const EMBEDDED_DATA = {
+  "updated": "2026-02-23T21:14:13.186590",
+  "total": 2,
+  "items": [
+    {
+      "id": "310b72d5-042d-8121-9fb1-c9496f55da00",
+      "url": "https://www.notion.so/How-I-Run-My-Entire-Business-With-AI-Agents-Full-OpenClaw-Setup-Sharbel-310b72d5042d81219fb1c9496f55da00",
+      "title": "How I Run My Entire Business With AI Agents (Full OpenClaw Setup) — Sharbel",
+      "platform": "X/Twitter",
+      "rating": "⭐⭐⭐⭐",
+      "status": "Analisado",
+      "valor": "Alta Prioridade",
+      "tags": [
+        "AI Agents",
+        "Automation",
+        "Business Model"
+      ],
+      "date": "2026-02-23",
+      "original_url": "https://x.com/sharbel/status/2025944354070659094",
+      "creator": "Sharbel",
+      "creator_id": "310b72d5-042d-819b-b942-c52a2a9f72a5",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "310b72d5-042d-8138-b015-e673edd95b77",
+      "url": "https://www.notion.so/Build-a-Profitable-App-in-Any-Niche-in-Under-a-Day-Om-Patel-310b72d5042d8138b015e673edd95b77",
+      "title": "Build a Profitable App in Any Niche in Under a Day — Om Patel",
+      "platform": "X/Twitter",
+      "rating": "⭐⭐⭐",
+      "status": "Analisado",
+      "valor": "Aplicável",
+      "tags": [
+        "AI Agents",
+        "Product"
+      ],
+      "date": "2026-02-23",
+      "original_url": "https://x.com/om_patel5/status/2025443882331164926",
+      "creator": "Om Patel",
+      "creator_id": "310b72d5-042d-8165-a10c-e4978b0e4dff",
+      "created": "2026-02-23"
+    }
+  ]
+};
+
+async function loadData() {
+  try {
+    // Try fetch first (for live updates), fallback to embedded
+    try {
+      const resp = await fetch('research_mc_data.json');
+      if (resp.ok) DATA = await resp.json();
+      else DATA = EMBEDDED_DATA;
+    } catch(e) {
+      DATA = EMBEDDED_DATA;
+    }
+    FILTERED_ITEMS = DATA.items;
+    updateStats();
+    updateTimestamp();
+    applyFilters();
+  } catch(e) {
+    console.error('Failed to load data:', e);
+    document.getElementById('s-total').textContent = 'ERR';
+  }
+}
+
+function updateStats() {
+  document.getElementById('s-total').textContent = DATA.total;
+  document.getElementById('s-pendente').textContent = DATA.items.filter(i => i.status === 'Pendente').length;
+  document.getElementById('s-analisado').textContent = DATA.items.filter(i => i.status === 'Analisado').length;
+  document.getElementById('s-fila').textContent = DATA.items.filter(i => i.status === 'Na Fila').length;
+  document.getElementById('s-execucao').textContent = DATA.items.filter(i => i.status === 'Em Execução').length;
+  document.getElementById('s-executado').textContent = DATA.items.filter(i => i.status === 'Executado').length;
+  document.getElementById('s-capitalizado').textContent = DATA.items.filter(i => i.status === 'Capitalizado').length;
+}
+
+function updateTimestamp() {
+  if (DATA.updated) {
+    const d = new Date(DATA.updated);
+    document.getElementById('update-time').textContent = 'Updated ' + d.toLocaleString('pt-BR', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  }
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────────────────
+function applyFilters() {
+  const searchQ = document.getElementById('search-input').value.toLowerCase();
+  const platformF = document.getElementById('filter-platform').value;
+  const ratingF = document.getElementById('filter-rating').value;
+
+  FILTERED_ITEMS = DATA.items.filter(item => {
+    if (searchQ && !item.title.toLowerCase().includes(searchQ)) return false;
+    if (platformF && item.platform !== platformF) return false;
+    if (ratingF && item.rating !== ratingF) return false;
+    return true;
+  });
+
+  renderCurrentView();
+}
+
+// ── VIEW TOGGLE ───────────────────────────────────────────────────────────────
+function setView(v) {
+  document.querySelectorAll('.vt-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.view').forEach(vw => vw.classList.remove('on'));
+  document.getElementById('vt-' + v).classList.add('on');
+  document.getElementById('view-' + v).classList.add('on');
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  const active = document.querySelector('.view.on').id;
+  if (active === 'view-kanban') renderKanban();
+  else if (active === 'view-list') renderList();
+  else if (active === 'view-stats') renderStats();
+}
+
+// ── KANBAN ────────────────────────────────────────────────────────────────────
+function renderKanban() {
+  const root = document.getElementById('kanban-root');
+  root.innerHTML = '';
+
+  STATUS_ORDER.forEach(status => {
+    const items = FILTERED_ITEMS.filter(i => i.status === status);
+    const col = document.createElement('div');
+    col.className = 'kb-col';
+
+    const color = STATUS_COLORS[status];
+    col.innerHTML = `
+      <div class="kb-col-head">
+        <div class="kb-col-title" style="color:${color.text}">${status}</div>
+        <span class="kb-col-cnt">${items.length}</span>
+      </div>
+      <div class="kb-cards" id="kb-${status.replace(/\s/g,'')}"></div>
+    `;
+
+    const cards = col.querySelector('.kb-cards');
+    items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'kb-card';
+      card.onclick = () => window.open(item.url, '_blank');
+
+      const emoji = PLATFORM_EMOJI[item.platform] || '📌';
+      const valorClass = item.valor === 'Referência' ? 'ref' : item.valor === 'Aplicável' ? 'apl' : item.valor === 'Alta Prioridade' ? 'alt' : 'gam';
+      const title = item.title.length > 60 ? item.title.slice(0, 60) + '...' : item.title;
+
+      card.innerHTML = `
+        <div class="kb-card-platform">${emoji}</div>
+        <div class="kb-card-title">${title}</div>
+        ${item.creator ? `<div class="kb-card-creator">${item.creator}</div>` : ''}
+        <div class="kb-card-foot">
+          <div class="kb-card-rating">${item.rating || '—'}</div>
+          ${item.valor ? `<div class="kb-card-valor ${valorClass}">${item.valor}</div>` : ''}
+        </div>
+        ${item.date ? `<div class="kb-card-date">${item.date}</div>` : ''}
+        ${item.tags.length > 0 ? `<div class="kb-card-tags">${item.tags.slice(0, 3).map(t => `<span class="kb-card-tag">${t}</span>`).join('')}</div>` : ''}
+      `;
+      cards.appendChild(card);
+    });
+
+    root.appendChild(col);
+  });
+}
+
+// ── LIST ──────────────────────────────────────────────────────────────────────
+function renderList() {
+  const tbody = document.getElementById('list-body');
+  tbody.innerHTML = '';
+
+  let items = [...FILTERED_ITEMS];
+  if (CURRENT_SORT.column) {
+    items.sort((a, b) => {
+      const aVal = a[CURRENT_SORT.column] || '';
+      const bVal = b[CURRENT_SORT.column] || '';
+      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      return CURRENT_SORT.direction === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  items.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.onclick = () => window.open(item.url, '_blank');
+
+    const emoji = PLATFORM_EMOJI[item.platform] || '📌';
+    const statusColor = STATUS_COLORS[item.status];
+    const valorClass = item.valor === 'Referência' ? 'gray' : item.valor === 'Aplicável' ? 'blue' : item.valor === 'Alta Prioridade' ? 'orange' : 'err';
+
+    tr.innerHTML = `
+      <td><span class="badge ${valorClass}" style="background:${statusColor.bg};color:${statusColor.text}">${item.status}</span></td>
+      <td><span class="platform-emoji">${emoji}</span> ${item.platform}</td>
+      <td>${item.title}</td>
+      <td>${item.creator ? `<span class="creator-badge">${item.creator}</span>` : '—'}</td>
+      <td>${item.rating || '—'}</td>
+      <td>${item.valor ? `<span class="badge ${valorClass}">${item.valor}</span>` : '—'}</td>
+      <td>${item.date || '—'}</td>
+      <td><div class="tags-cell">${item.tags.slice(0, 3).map(t => `<span class="tag-pill">${t}</span>`).join('')}</div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function sortTable(col) {
+  if (CURRENT_SORT.column === col) {
+    CURRENT_SORT.direction = CURRENT_SORT.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    CURRENT_SORT.column = col;
+    CURRENT_SORT.direction = 'asc';
+  }
+  renderList();
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+let charts = {};
+
+function renderStats() {
+  renderStatusChart();
+  renderPlatformChart();
+  renderRatingChart();
+  renderCreatorsChart();
+}
+
+function renderStatusChart() {
+  const ctx = document.getElementById('chart-status');
+  if (charts.status) charts.status.destroy();
+
+  const statusCounts = {};
+  STATUS_ORDER.forEach(s => statusCounts[s] = FILTERED_ITEMS.filter(i => i.status === s).length);
+
+  charts.status = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: STATUS_ORDER,
+      datasets: [{
+        label: 'Items',
+        data: STATUS_ORDER.map(s => statusCounts[s]),
+        backgroundColor: STATUS_ORDER.map(s => STATUS_COLORS[s].bg),
+        borderColor: STATUS_ORDER.map(s => STATUS_COLORS[s].text),
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,.05)' } },
+        x: { ticks: { color: '#888' }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderPlatformChart() {
+  const ctx = document.getElementById('chart-platform');
+  if (charts.platform) charts.platform.destroy();
+
+  const platforms = {};
+  FILTERED_ITEMS.forEach(i => platforms[i.platform] = (platforms[i.platform] || 0) + 1);
+
+  charts.platform = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(platforms),
+      datasets: [{
+        data: Object.values(platforms),
+        backgroundColor: ['#60a5fa', '#4ade80', '#fbbf24', '#fb923c', '#c084fc', '#f87171']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { color: '#888', font: { size: 10 } } } }
+    }
+  });
+}
+
+function renderRatingChart() {
+  const ctx = document.getElementById('chart-rating');
+  if (charts.rating) charts.rating.destroy();
+
+  const ratings = {};
+  ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'].forEach(r => ratings[r] = FILTERED_ITEMS.filter(i => i.rating === r).length);
+
+  charts.rating = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(ratings),
+      datasets: [{
+        label: 'Items',
+        data: Object.values(ratings),
+        backgroundColor: '#fcd34d',
+        borderColor: '#fbbf24',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,.05)' } },
+        x: { ticks: { color: '#888' }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderCreatorsChart() {
+  const ctx = document.getElementById('chart-creators');
+  if (charts.creators) charts.creators.destroy();
+
+  const creators = {};
+  FILTERED_ITEMS.forEach(i => {
+    if (i.creator) creators[i.creator] = (creators[i.creator] || 0) + 1;
+  });
+
+  const sorted = Object.entries(creators).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+  charts.creators = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sorted.map(c => c[0].length > 20 ? c[0].slice(0, 20) + '...' : c[0]),
+      datasets: [{
+        label: 'Items',
+        data: sorted.map(c => c[1]),
+        backgroundColor: '#c084fc',
+        borderColor: '#a855f7',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,.05)' } },
+        y: { ticks: { color: '#888', font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
