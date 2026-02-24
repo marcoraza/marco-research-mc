@@ -40,6 +40,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .stat-val{font-size:22px;font-weight:700;line-height:1}
 .stat-lbl{font-size:11px;color:var(--dim);margin-top:3px}
 
+/* ── TOP PERFORMERS ───────────────────────────────────────────────────────── */
+.perf-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:980px){.perf-grid{grid-template-columns:1fr}}
+.perf-box{background:var(--bg2);border-radius:7px;padding:14px;border:1px solid var(--sep)}
+.perf-box h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:10px}
+.perf-table{width:100%;border-collapse:collapse}
+.perf-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--dim2);padding:8px 6px;text-align:left;cursor:pointer;user-select:none}
+.perf-table th:hover{color:var(--dim)}
+.perf-table td{padding:8px 6px;border-top:1px solid var(--sep);font-size:12px}
+.perf-table tr{cursor:pointer;transition:background .1s}
+.perf-table tr:hover{background:rgba(255,255,255,.025)}
+.perf-title{max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.patterns{display:flex;flex-direction:column;gap:8px}
+.pattern-line{font-size:12px;color:var(--text);padding:8px 10px;background:var(--bg3);border:1px solid var(--sep);border-radius:6px}
+.cap-badge{font-size:11px;color:var(--gold);margin-left:6px}
+
 /* ── ACTIONS ──────────────────────────────────────────────────────────────── */
 .actions{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .actions-r{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -162,6 +178,32 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   <div class="stat"><div class="stat-val" style="color:var(--purple)" id="s-capitalizado">—</div><div class="stat-lbl">Capitalizado</div></div>
 </div>
 
+<!-- ── TOP PERFORMERS ─────────────────────────────────────────────────────── -->
+<div class="perf-grid">
+  <div class="perf-box">
+    <h4>Top Performers</h4>
+    <table class="perf-table">
+      <thead>
+        <tr>
+          <th onclick="sortTopPerformers('title')">Title</th>
+          <th onclick="sortTopPerformers('platform')">Platform</th>
+          <th onclick="sortTopPerformers('creator')">Creator</th>
+          <th onclick="sortTopPerformers('views')">Views</th>
+          <th onclick="sortTopPerformers('likes')">Likes</th>
+          <th onclick="sortTopPerformers('status')">Status</th>
+        </tr>
+      </thead>
+      <tbody id="top-performers-body"></tbody>
+    </table>
+  </div>
+  <div class="perf-box">
+    <h4>Patterns</h4>
+    <div class="patterns" id="patterns-root">
+      <div class="pattern-line">Carregando...</div>
+    </div>
+  </div>
+</div>
+
 <!-- ── ACTIONS ────────────────────────────────────────────────────────────── -->
 <div class="actions">
   <button class="btn primary" onclick="loadData()">↻ Refresh</button>
@@ -257,6 +299,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 let DATA = { items: [], total: 0, updated: '' };
 let FILTERED_ITEMS = [];
 let CURRENT_SORT = { column: '', direction: 'asc' };
+let TOP_SORT = { column: 'views', direction: 'desc' };
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function pad(n) { return String(n).padStart(2,'0'); }
@@ -291,11 +334,13 @@ const STATUS_COLORS = {
 };
 
 const STATUS_ORDER = ['Pendente', 'Analisado', 'Na Fila', 'Em Execução', 'Executado', 'Capitalizado', 'Descartado'];
+const CAPITALIZE_VIEWS = 1000;
+const CAPITALIZE_LIKES = 50;
 
 // ── LOAD DATA ─────────────────────────────────────────────────────────────────
 const EMBEDDED_DATA = {
-  "updated": "2026-02-24T00:02:18.249547",
-  "total": 11,
+  "updated": "2026-02-24T02:33:04.563833",
+  "total": 6,
   "items": [
     {
       "id": "310b72d5-042d-811e-9919-d2bf2801979c",
@@ -308,6 +353,11 @@ const EMBEDDED_DATA = {
       "tags": [],
       "date": "2026-02-23",
       "original_url": "https://www.youtube.com/watch?v=XeTgMEapbag",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
       "creator": "Alex Finn",
       "creator_id": "310b72d5-042d-81e7-8177-c4057b74ac04",
       "created": "2026-02-23"
@@ -327,6 +377,11 @@ const EMBEDDED_DATA = {
       ],
       "date": "2026-02-23",
       "original_url": "https://x.com/sharbel/status/2025944354070659094",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
       "creator": "Sharbel",
       "creator_id": "310b72d5-042d-819b-b942-c52a2a9f72a5",
       "created": "2026-02-23"
@@ -342,6 +397,11 @@ const EMBEDDED_DATA = {
       "tags": [],
       "date": "2026-02-23",
       "original_url": "https://www.youtube.com/watch?v=nSBKCZQkmYw",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
       "creator": "Peter Yang",
       "creator_id": "310b72d5-042d-8156-a122-cd989cd7ce64",
       "created": "2026-02-23"
@@ -360,23 +420,13 @@ const EMBEDDED_DATA = {
       ],
       "date": "2026-02-23",
       "original_url": "https://x.com/om_patel5/status/2025443882331164926",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
       "creator": "Om Patel",
       "creator_id": "310b72d5-042d-8165-a10c-e4978b0e4dff",
-      "created": "2026-02-23"
-    },
-    {
-      "id": "310b72d5-042d-8140-8060-cba2461e7457",
-      "url": "https://www.notion.so/Inbox-item-Cjjh5SV_o4-310b72d5042d81408060cba2461e7457",
-      "title": "Inbox item -Cjjh5SV_o4",
-      "platform": "?",
-      "rating": "",
-      "status": "Descartado",
-      "valor": "",
-      "tags": [],
-      "date": "2026-02-23",
-      "original_url": "https://www.youtube.com/watch?v=-Cjjh5SV_o4",
-      "creator": "",
-      "creator_id": "",
       "created": "2026-02-23"
     },
     {
@@ -390,14 +440,19 @@ const EMBEDDED_DATA = {
       "tags": [],
       "date": "2026-02-23",
       "original_url": "https://x.com/BenjaminBadejo/status/2025587066436784636",
-      "creator": "",
-      "creator_id": "",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Ben Badejo",
+      "creator_id": "310b72d5-042d-8168-835f-cdb1347a8ce3",
       "created": "2026-02-23"
     },
     {
       "id": "310b72d5-042d-817a-97e0-dd5dc931cc13",
-      "url": "https://www.notion.so/Qual-cheiro-faz-sua-cabe-a-doer-Comente-MUSA-que-te-envio-o-cupom-de-desconto-do-leo-essencia-310b72d5042d817a97e0dd5dc931cc13",
-      "title": "Qual cheiro faz sua cabeça doer?🤯\n\nComente \"MUSA\" que te envio o cupom de desconto do óleo essencial",
+      "url": "https://www.notion.so/Qual-cheiro-faz-sua-cabe-a-doer-310b72d5042d817a97e0dd5dc931cc13",
+      "title": "Qual cheiro faz sua cabeça doer?\n",
       "platform": "Instagram",
       "rating": "⭐⭐",
       "status": "Analisado",
@@ -405,71 +460,205 @@ const EMBEDDED_DATA = {
       "tags": [],
       "date": "2026-02-23",
       "original_url": "https://www.instagram.com/reel/DVG84lPDL_D/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==",
-      "creator": "drpauloabner.enxaqueca",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Dr Paulo Abner",
       "creator_id": "310b72d5-042d-81bb-9e3b-c534b966775c",
       "created": "2026-02-23"
+    }
+  ],
+  "top_performers": [
+    {
+      "id": "310b72d5-042d-811e-9919-d2bf2801979c",
+      "url": "https://www.notion.so/5-OpenClaw-use-cases-that-will-make-you-a-productivity-MACHINE-310b72d5042d811e9919d2bf2801979c",
+      "title": "5 OpenClaw use cases that will make you a productivity MACHINE",
+      "platform": "YouTube",
+      "rating": "⭐⭐⭐",
+      "status": "Analisado",
+      "valor": "Aplicável",
+      "tags": [],
+      "date": "2026-02-23",
+      "original_url": "https://www.youtube.com/watch?v=XeTgMEapbag",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Alex Finn",
+      "creator_id": "310b72d5-042d-81e7-8177-c4057b74ac04",
+      "created": "2026-02-23"
     },
     {
-      "id": "310b72d5-042d-8198-a500-d04d3849e997",
-      "url": "https://www.notion.so/BREAKING-AI-can-now-design-like-Apple-level-creative-directors-for-free-Here-are-10-Claude-Opus-310b72d5042d8198a500d04d3849e997",
-      "title": "BREAKING: AI can now design like Apple-level creative directors (for free).\n\nHere are 10 Claude Opus",
+      "id": "310b72d5-042d-8121-9fb1-c9496f55da00",
+      "url": "https://www.notion.so/How-I-Run-My-Entire-Business-With-AI-Agents-Full-OpenClaw-Setup-Sharbel-310b72d5042d81219fb1c9496f55da00",
+      "title": "How I Run My Entire Business With AI Agents (Full OpenClaw Setup) — Sharbel",
       "platform": "X/Twitter",
-      "rating": "",
-      "status": "Pendente",
-      "valor": "",
-      "tags": [],
+      "rating": "⭐⭐⭐⭐",
+      "status": "Analisado",
+      "valor": "Alta Prioridade",
+      "tags": [
+        "AI Agents",
+        "Automation",
+        "Business Model"
+      ],
       "date": "2026-02-23",
-      "original_url": "https://x.com/Whizz_ai/status/2024489022819803333",
-      "creator": "",
-      "creator_id": "",
+      "original_url": "https://x.com/sharbel/status/2025944354070659094",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Sharbel",
+      "creator_id": "310b72d5-042d-819b-b942-c52a2a9f72a5",
       "created": "2026-02-23"
     },
     {
-      "id": "310b72d5-042d-819e-b038-c2ba82c8fabf",
-      "url": "https://www.notion.so/Inbox-item-7zjc-Y0fBmY-310b72d5042d819eb038c2ba82c8fabf",
-      "title": "Inbox item 7zjc-Y0fBmY",
-      "platform": "?",
-      "rating": "",
-      "status": "Descartado",
-      "valor": "",
+      "id": "310b72d5-042d-8126-a1f8-f3922bae061d",
+      "url": "https://www.notion.so/Full-Tutorial-Use-OpenClaw-to-Build-a-Business-That-Runs-Itself-in-35-Min-Nat-Eliason-310b72d5042d8126a1f8f3922bae061d",
+      "title": "Full Tutorial: Use OpenClaw to Build a Business That Runs Itself in 35 Min | Nat Eliason",
+      "platform": "YouTube",
+      "rating": "⭐⭐⭐",
+      "status": "Analisado",
+      "valor": "Aplicável",
       "tags": [],
       "date": "2026-02-23",
-      "original_url": "https://www.youtube.com/watch?v=7zjc-Y0fBmY",
-      "creator": "",
-      "creator_id": "",
+      "original_url": "https://www.youtube.com/watch?v=nSBKCZQkmYw",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Peter Yang",
+      "creator_id": "310b72d5-042d-8156-a122-cd989cd7ce64",
       "created": "2026-02-23"
     },
     {
-      "id": "310b72d5-042d-81a9-bdad-f7ff3e3b6341",
-      "url": "https://www.notion.so/ARTICLE-How-I-Optimized-Conversation-Memory-Snapshots-in-OpenClaw-to-Eliminate-Post-Compaction-Ha-310b72d5042d81a9bdadf7ff3e3b6341",
+      "id": "310b72d5-042d-8138-b015-e673edd95b77",
+      "url": "https://www.notion.so/Build-a-Profitable-App-in-Any-Niche-in-Under-a-Day-Om-Patel-310b72d5042d8138b015e673edd95b77",
+      "title": "Build a Profitable App in Any Niche in Under a Day — Om Patel",
+      "platform": "X/Twitter",
+      "rating": "⭐⭐⭐",
+      "status": "Analisado",
+      "valor": "Aplicável",
+      "tags": [
+        "AI Agents",
+        "Product"
+      ],
+      "date": "2026-02-23",
+      "original_url": "https://x.com/om_patel5/status/2025443882331164926",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Om Patel",
+      "creator_id": "310b72d5-042d-8165-a10c-e4978b0e4dff",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "310b72d5-042d-815f-9976-dacaf14839c7",
+      "url": "https://www.notion.so/ARTICLE-How-I-Optimized-Conversation-Memory-Snapshots-in-OpenClaw-to-Eliminate-Post-Compaction-Ha-310b72d5042d815f9976dacaf14839c7",
       "title": "[ARTICLE] How I Optimized Conversation Memory Snapshots in OpenClaw to Eliminate Post-Compaction \"Ha",
       "platform": "X/Twitter",
-      "rating": "",
-      "status": "Pendente",
-      "valor": "",
+      "rating": "⭐⭐⭐⭐",
+      "status": "Analisado",
+      "valor": "Alta Prioridade",
       "tags": [],
       "date": "2026-02-23",
       "original_url": "https://x.com/BenjaminBadejo/status/2025587066436784636",
-      "creator": "",
-      "creator_id": "",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Ben Badejo",
+      "creator_id": "310b72d5-042d-8168-835f-cdb1347a8ce3",
       "created": "2026-02-23"
     },
     {
-      "id": "311b72d5-042d-8135-935a-d11d61e062d5",
-      "url": "https://www.notion.so/Google-just-dropped-Gemini-3-1-WOAH-311b72d5042d8135935ad11d61e062d5",
-      "title": "Google just dropped Gemini 3.1... (WOAH)",
-      "platform": "YouTube",
-      "rating": "",
-      "status": "Pendente",
-      "valor": "",
+      "id": "310b72d5-042d-817a-97e0-dd5dc931cc13",
+      "url": "https://www.notion.so/Qual-cheiro-faz-sua-cabe-a-doer-310b72d5042d817a97e0dd5dc931cc13",
+      "title": "Qual cheiro faz sua cabeça doer?\n",
+      "platform": "Instagram",
+      "rating": "⭐⭐",
+      "status": "Analisado",
+      "valor": "Referência",
       "tags": [],
-      "date": "2026-02-24",
-      "original_url": "https://www.youtube.com/watch?v=W5dlgzluems",
-      "creator": "Matthew Berman",
-      "creator_id": "30cb72d5-042d-814a-b41e-e5fca0e11732",
-      "created": "2026-02-24"
+      "date": "2026-02-23",
+      "original_url": "https://www.instagram.com/reel/DVG84lPDL_D/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==",
+      "url_publicado": "",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "metricas_atualizadas": "",
+      "creator": "Dr Paulo Abner",
+      "creator_id": "310b72d5-042d-81bb-9e3b-c534b966775c",
+      "created": "2026-02-23"
     }
-  ]
+  ],
+  "patterns": {
+    "avg_views_by_platform": {
+      "YouTube": 0.0,
+      "X/Twitter": 0.0,
+      "Instagram": 0.0
+    },
+    "avg_views_by_creator": [
+      {
+        "creator": "Alex Finn",
+        "avg_views": 0.0,
+        "items": 1
+      },
+      {
+        "creator": "Sharbel",
+        "avg_views": 0.0,
+        "items": 1
+      },
+      {
+        "creator": "Peter Yang",
+        "avg_views": 0.0,
+        "items": 1
+      },
+      {
+        "creator": "Om Patel",
+        "avg_views": 0.0,
+        "items": 1
+      },
+      {
+        "creator": "Ben Badejo",
+        "avg_views": 0.0,
+        "items": 1
+      }
+    ],
+    "best_tags": [
+      {
+        "tag": "AI Agents",
+        "count": 2,
+        "share_top_performers": 33.3
+      },
+      {
+        "tag": "Automation",
+        "count": 1,
+        "share_top_performers": 16.7
+      },
+      {
+        "tag": "Business Model",
+        "count": 1,
+        "share_top_performers": 16.7
+      },
+      {
+        "tag": "Product",
+        "count": 1,
+        "share_top_performers": 16.7
+      }
+    ],
+    "format_performance": {
+      "platform": "YouTube",
+      "avg_views": 0.0
+    }
+  }
 };
 
 async function loadData() {
@@ -484,6 +673,8 @@ async function loadData() {
     FILTERED_ITEMS = DATA.items;
     updateStats();
     updateTimestamp();
+    renderTopPerformers();
+    renderPatterns();
     applyFilters();
   } catch(e) {
     console.error('Failed to load data:', e);
@@ -570,10 +761,11 @@ function renderKanban() {
       const emoji = PLATFORM_EMOJI[item.platform] || '📌';
       const valorClass = item.valor === 'Referência' ? 'ref' : item.valor === 'Aplicável' ? 'apl' : item.valor === 'Alta Prioridade' ? 'alt' : 'gam';
       const title = item.title.length > 60 ? item.title.slice(0, 60) + '...' : item.title;
+      const capBadge = ((Number(item.views || 0) >= CAPITALIZE_VIEWS) || (Number(item.likes || 0) >= CAPITALIZE_LIKES)) ? '<span class=\"cap-badge\">💰</span>' : '';
 
       card.innerHTML = `
         <div class="kb-card-platform">${emoji}</div>
-        <div class="kb-card-title">${title}</div>
+        <div class="kb-card-title">${title}${capBadge}</div>
         ${item.creator ? `<div class="kb-card-creator">${item.creator}</div>` : ''}
         <div class="kb-card-foot">
           <div class="kb-card-rating">${item.rating || '—'}</div>
@@ -587,6 +779,86 @@ function renderKanban() {
 
     root.appendChild(col);
   });
+}
+
+// ── TOP PERFORMERS ───────────────────────────────────────────────────────────
+function topPerformersSource() {
+  if (Array.isArray(DATA.top_performers) && DATA.top_performers.length > 0) {
+    return [...DATA.top_performers];
+  }
+  return [...(DATA.items || [])].sort((a, b) => (Number(b.views || 0) - Number(a.views || 0))).slice(0, 10);
+}
+
+function sortTopPerformers(col) {
+  if (TOP_SORT.column === col) TOP_SORT.direction = TOP_SORT.direction === 'asc' ? 'desc' : 'asc';
+  else {
+    TOP_SORT.column = col;
+    TOP_SORT.direction = 'asc';
+  }
+  renderTopPerformers();
+}
+
+function renderTopPerformers() {
+  const tbody = document.getElementById('top-performers-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const items = topPerformersSource();
+  items.sort((a, b) => {
+    const k = TOP_SORT.column;
+    const aRaw = a[k];
+    const bRaw = b[k];
+    const aVal = (k === 'views' || k === 'likes') ? Number(aRaw || 0) : String(aRaw || '').toLowerCase();
+    const bVal = (k === 'views' || k === 'likes') ? Number(bRaw || 0) : String(bRaw || '').toLowerCase();
+    if (aVal < bVal) return TOP_SORT.direction === 'asc' ? -1 : 1;
+    if (aVal > bVal) return TOP_SORT.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  items.slice(0, 10).forEach(item => {
+    const tr = document.createElement('tr');
+    tr.onclick = () => window.open(item.url, '_blank');
+    const emoji = PLATFORM_EMOJI[item.platform] || '📌';
+    const capBadge = ((Number(item.views || 0) >= CAPITALIZE_VIEWS) || (Number(item.likes || 0) >= CAPITALIZE_LIKES)) ? ' 💰' : '';
+    tr.innerHTML = `
+      <td><div class="perf-title">${item.title || 'Sem título'}</div></td>
+      <td>${emoji} ${item.platform || '—'}</td>
+      <td>${item.creator || '—'}</td>
+      <td>${Number(item.views || 0).toLocaleString('pt-BR')}</td>
+      <td>${Number(item.likes || 0).toLocaleString('pt-BR')}</td>
+      <td>${item.status || '—'}${capBadge}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function fmtK(n) {
+  const v = Number(n || 0);
+  if (v >= 1000000) return (v / 1000000).toFixed(1).replace('.', ',') + 'M';
+  if (v >= 1000) return (v / 1000).toFixed(1).replace('.', ',') + 'k';
+  return String(v);
+}
+
+function renderPatterns() {
+  const root = document.getElementById('patterns-root');
+  if (!root) return;
+  const p = DATA.patterns || {};
+
+  const bestPlatform = (p.format_performance || {}).platform || '—';
+  const bestPlatformAvg = (p.format_performance || {}).avg_views || 0;
+  const bestTagObj = Array.isArray(p.best_tags) && p.best_tags.length ? p.best_tags[0] : null;
+  const topCreatorObj = Array.isArray(p.avg_views_by_creator) && p.avg_views_by_creator.length ? p.avg_views_by_creator[0] : null;
+
+  const bestTagText = bestTagObj
+    ? `${bestTagObj.tag} (aparece em ${bestTagObj.share_top_performers || 0}% dos top performers)`
+    : '—';
+  const topCreatorText = topCreatorObj ? topCreatorObj.creator : '—';
+
+  root.innerHTML = `
+    <div class="pattern-line">Best platform: ${bestPlatform} (avg ${fmtK(bestPlatformAvg)} views)</div>
+    <div class="pattern-line">Best tag: ${bestTagText}</div>
+    <div class="pattern-line">Top creator: ${topCreatorText}</div>
+  `;
 }
 
 // ── LIST ──────────────────────────────────────────────────────────────────────
